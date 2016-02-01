@@ -21,7 +21,6 @@ def softmax_loss_naive(W, X, y, reg):
   """
   # Initialize the loss and gradient to zero.
   loss = 0.0
-  dW = np.zeros_like(W)
 
   #############################################################################
   # TODO: Compute the softmax loss and its gradient using explicit loops.     #
@@ -29,7 +28,27 @@ def softmax_loss_naive(W, X, y, reg):
   # here, it is easy to run into numeric instability. Don't forget the        #
   # regularization!                                                           #
   #############################################################################
-  pass
+  dW = np.zeros(W.shape) # initialize the gradient as zero
+  # compute the loss and the gradient
+  num_classes = W.shape[1]
+  num_train = X.shape[0]
+  losses = np.zeros([num_train,1])
+  for i in xrange(num_train):
+    f = X[i].dot(W)
+    f -= np.max(f)
+    p = np.exp(f) / np.sum(np.exp(f)) # now sum(p) should be 1.0
+    losses[i] = - np.log(p[y[i]])
+    dW += np.outer(X[i],p)
+    dW[:,y[i]] -= X[i]
+
+  # Right now the loss is a sum over all training examples, but we want it
+  # to be an average instead so we divide by num_train.
+  loss = np.sum(losses) / num_train
+  dW /= num_train
+  # Add regularization to the loss.
+  loss += 0.5 * reg * np.sum(W * W)
+  dW += reg * W
+
   #############################################################################
   #                          END OF YOUR CODE                                 #
   #############################################################################
@@ -44,16 +63,33 @@ def softmax_loss_vectorized(W, X, y, reg):
   Inputs and outputs are the same as softmax_loss_naive.
   """
   # Initialize the loss and gradient to zero.
-  loss = 0.0
   dW = np.zeros_like(W)
-
+  num_classes = W.shape[1]
+  num_train = X.shape[0]
+  loss = 0.0
   #############################################################################
   # TODO: Compute the softmax loss and its gradient using no explicit loops.  #
   # Store the loss in loss and the gradient in dW. If you are not careful     #
   # here, it is easy to run into numeric instability. Don't forget the        #
   # regularization!                                                           #
   #############################################################################
-  pass
+  # compute the loss and the gradient
+  f = X.dot(W)
+  f += np.max(f,axis=1)[:,np.newaxis] # has to add newaxis for broadcasting
+  p = np.exp(f) / np.sum(np.exp(f), axis = 1)[:,np.newaxis]
+  loss = -np.sum(np.log(p[range(num_train),y]))
+  dW = X.T.dot(p)
+  # construct a N by C matrix which is nonzero at (i,j) if y[i] = j
+  y_binary = np.zeros([num_train,num_classes])
+  y_binary[range(num_train), y] = 1
+  dW -= X.T.dot(y_binary)
+  # Right now the loss is a sum over all training examples, but we want it
+  # to be an average instead so we divide by num_train.
+  loss /= num_train
+  dW /= num_train
+  # Add regularization to the loss.
+  loss += 0.5 * reg * np.sum(W * W)
+  dW += reg * W
   #############################################################################
   #                          END OF YOUR CODE                                 #
   #############################################################################
