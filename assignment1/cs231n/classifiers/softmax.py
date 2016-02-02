@@ -75,13 +75,14 @@ def softmax_loss_vectorized(W, X, y, reg):
   #############################################################################
   # compute the loss and the gradient
   f = X.dot(W)
-  f += np.max(f,axis=1)[:,np.newaxis] # has to add newaxis for broadcasting
+  f -= np.max(f,axis=1)[:,np.newaxis] # has to add newaxis for broadcasting
   p = np.exp(f) / np.sum(np.exp(f), axis = 1)[:,np.newaxis]
   loss = -np.sum(np.log(p[range(num_train),y]))
 
   # p[i,y[i]] are augmented subtracted with -1 to calculate gradient
-  p[range(num_train),y] -= 1
-  dW = X.T.dot(p)
+  activation = p
+  activation[range(num_train),y] -= 1
+  dW = X.T.dot(activation)
   # Right now the loss is a sum over all training examples, but we want it
   # to be an average instead so we divide by num_train.
   loss /= num_train

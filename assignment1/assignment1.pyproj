@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{258dc400-c68e-4613-a433-5a2f5187c37c}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>cs231n\classifiers\linear_svm.py</StartupFile>
+    <StartupFile>cs231n\classifiers\softmax.py</StartupFile>
     <SearchPath>cs231n\</SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
