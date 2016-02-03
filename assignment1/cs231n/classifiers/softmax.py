@@ -79,7 +79,9 @@ def softmax_loss_vectorized(W, X, y, reg):
   p = np.exp(scores) / np.sum(np.exp(scores), axis = 1)[:,np.newaxis]
   loss = -np.sum(np.log(p[range(num_train),y]))
 
-  # p[i,y[i]] are augmented subtracted with -1 to calculate gradient
+  # Always think of the problem with the variable scores in mind, so dLoss/dW
+  # should be dLoss/dscores (nonlinear scalar to matrix derivative) times dscores/dW
+  # (simply X since X*W = scores)
   dscores = p
   dscores[range(num_train),y] -= 1
   dW = X.T.dot(dscores)
