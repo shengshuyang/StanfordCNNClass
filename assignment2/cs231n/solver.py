@@ -169,6 +169,8 @@ class Solver(object):
     for p, w in self.model.params.iteritems():
       dw = grads[p]
       config = self.optim_configs[p]
+      # TODO: only use sgd for now.
+      # Other updating rules are not implemted and return empty params
       next_w, next_config = self.update_rule(w, dw, config)
       self.model.params[p] = next_w
       self.optim_configs[p] = next_config
