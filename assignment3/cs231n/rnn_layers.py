@@ -32,7 +32,8 @@ def rnn_step_forward(x, prev_h, Wx, Wh, b):
   # hidden state and any values you need for the backward pass in the next_h   #
   # and cache variables respectively.                                          #
   ##############################################################################
-  pass
+  next_h = np.tanh(np.dot(prev_h ,Wh) + np.dot(x, Wx) + b)
+  cache = (x, prev_h, Wx, Wh, b)
   ##############################################################################
   #                               END OF YOUR CODE                             #
   ##############################################################################
@@ -50,7 +51,7 @@ def rnn_step_backward(dnext_h, cache):
   Returns a tuple of:
   - dx: Gradients of input data, of shape (N, D)
   - dprev_h: Gradients of previous hidden state, of shape (N, H)
-  - dWx: Gradients of input-to-hidden weights, of shape (N, H)
+  - dWx: Gradients of input-to-hidden weights, of shape (D, H)
   - dWh: Gradients of hidden-to-hidden weights, of shape (H, H)
   - db: Gradients of bias vector, of shape (H,)
   """
@@ -61,7 +62,19 @@ def rnn_step_backward(dnext_h, cache):
   # HINT: For the tanh function, you can compute the local derivative in terms #
   # of the output value from tanh.                                             #
   ##############################################################################
-  pass
+  (x, prev_h, Wx, Wh, b) = cache
+  print dnext_h
+  dnext_h = (1 - np.dot(prev_h, prev_h.T)) * dnext_h
+  print 1-np.dot(prev_h, prev_h.T)
+  print dnext_h
+  print prev_h.shape
+
+  dx = np.dot(dnext_h, Wx.T)
+  dprev_h = np.dot(dnext_h, Wh.T)
+  dWh = np.dot(dnext_h.T, prev_h)
+  dWx = np.dot(x.T, dnext_h)
+  db = np.sum(dnext_h,axis=0)
+
   ##############################################################################
   #                               END OF YOUR CODE                             #
   ##############################################################################
